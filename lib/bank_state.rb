@@ -37,6 +37,7 @@ class BankState
 		for n_index in 0..(@m - 1) do
 			@current_need << Array.new(@n)
 			for m_index in 0..(@n - 1)
+				# TODO: something is nil here
 				@current_need[n_index][m_index] = @max_need[n_index][m_index] - @currently_allocated[n_index][m_index]
 			end
 		end
