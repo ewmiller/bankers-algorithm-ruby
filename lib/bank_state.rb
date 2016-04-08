@@ -1,12 +1,11 @@
 class BankState
 
+	@@safe_sequence = Array.new()
+
 	def initialize(state)
 		raise "Given state is empty." if state.empty?
 
-		# TODO: I might be adding to the Arrays wrong
-		# If I instantiate them without a size, will the loops still work appropriately?
-		# Maybe I have to say 'm.times do {routine to add an array to the array}'
-		# TODO: make sure indices are being referenced correctly. Might have to switch m and n.
+		# TODO: make sure indices are being referenced correctly.
 
 		# Get important variables from the state. We will need
 		# m = number of resources, n = number of processes
@@ -46,16 +45,20 @@ class BankState
 		end
 
 		# Get the available resources matrix
+		# TODO: values are ending up negative somehow... probably hitting the wrong indices
 		@available_resources = @total_resources
-		@available_resources.each do
 			@currently_allocated.each do |row|
 				rowIndex = @currently_allocated.index(row)
+				puts("Currently Allocated row: #{rowIndex}")
 				@currently_allocated[rowIndex].each do |cell|
 					cellIndex = @currently_allocated[rowIndex].index(cell)
+					puts("Currently Allocated cell: #{cellIndex}")
 					@available_resources[cellIndex] -= cell
+					puts("Available resources [#{cellIndex}] = #{@available_resources[cellIndex]}.")
+					puts("#{@available_resources[cellIndex]} - #{cell}")
 				end
 			end
-		end
+
 		puts("Available resources array: #{@available_resources}")
 
 	end
@@ -63,5 +66,9 @@ class BankState
 	# determine if this state is safe
 	def isSafe()
 		return true
+	end
+
+	def getSequence()
+		return @@safe_sequence
 	end
 end
