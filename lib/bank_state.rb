@@ -1,12 +1,11 @@
+require "matrix"
+
 class BankState
 
 	@@safe_sequence = Array.new()
 
 	def initialize(state)
 		raise "Given state array is empty." if state.empty?
-
-		# TODO: find out if we even need a "total resources" matrix - is having
-		# available and allocated enough? (I think so)
 
 		# Get important variables from the state.
 		@num_resources = state[0].split(" ")[0].to_i
@@ -35,9 +34,11 @@ class BankState
 			# for each cell in the row (this process' need of resource i)
 			row.each do |cell|
 				cellIndex = @current_need[rowIndex].index(cell)
-				cell = (@max_need[rowIndex][cellIndex] - @currently_allocated[rowIndex][cellIndex])
+				cell = (@max_need[rowIndex][0] - @currently_allocated[rowIndex][cellIndex])
 			end
 		end
+
+		@active = Array.new(@num_processes, true)
 
 	end # end initialize
 
@@ -45,7 +46,8 @@ class BankState
 	def canFinish(process)
 		res = true
 		process.each do |need|
-			if(need > @available_resources[process.index(need)])
+			current_need = @current_need[@current_need.index(process)][process.index(need)]
+			if((current_need) > @available_resources[process.index(need)])
 				res = false
 			end
 		end
@@ -60,31 +62,38 @@ class BankState
 		end
 		puts("Removing #{process} from the current need matrix.")
 		@@safe_sequence << @current_need.index(process)
-		@current_need.delete_at(@current_need.index(process))
+		@active[@current_need.index(process)] = false
+	end
+
+	def isActive(process)
+		return @active[@current_need.index(process)]
 	end
 
 	# Determine if this state is safe
 	# For each process, see if its needs can be met. If so, complete it and free
 	# its resources.
 	def isSafe()
-		# counter prevents deadlock from spinning forever
-		@counter = @num_processes
 		res = true
-		while (!@current_need.empty?)
+		# count prevents deadlock from looping forever
+		count = 0
+		# TODO: while loop never exits
+		while(true)
+			counter = 0
 			@current_need.each do |process|
-				puts("Checking process #{@current_need.index(process)}.")
-				if(canFinish(process))
-					finishProcess(process)
-					@counter = @num_processes
-				else
-					puts("Can't finish process #{@current_need.index(process)}. Moving on.")
-					@counter -= 1
-				end
-				if(@counter == 0)
-					res = false
-					break
+				if(isActive(process))
+					if(canFinish(process))
+						finishProcess(process)
+					else
+						counter = counter + 1
+					end
 				end
 			end
+			if(counter = @num_processes)
+				break
+			end
+		end
+		if(res == false)
+			puts("Unsafe state.")
 		end
 		return res
 	end
