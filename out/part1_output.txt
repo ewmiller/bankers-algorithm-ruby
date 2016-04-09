@@ -15,7 +15,11 @@ Process4
 Process5
 
 File: Example3
-Unsafe State.
+Safe State.
+Safe sequence: 
+Process1
+Process2
+Process3
 
 File: Example4
 Unsafe State.

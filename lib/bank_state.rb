@@ -28,7 +28,7 @@ class BankState
 
 		# Initialize the current need matrix.
 
-		@current_need = @currently_allocated
+		@current_need = @currently_allocated.map { |e| e.dup  }
 		(0..(@num_processes - 1)).each do |i|
 			(0..(@num_resources - 1)).each do |j|
 				@current_need[i][j] = @max_need[i][j] - @currently_allocated[i][j]
@@ -59,10 +59,12 @@ class BankState
 		process.each do |resource|
 			@available_resources[process.index(resource)] += resource
 		end
-		puts("Marking #{process} as inactive:")
+
+		puts("Marking #{process} as inactive.")
+		puts("Available resources: #{@available_resources}")
 		@safe_sequence[processId] = processId + 1
 		puts("Current sequence: #{@safe_sequence}")
-		@active[@current_need.index(process)] = false
+		@active[processId] = false
 	end
 
 	def isActive(process)
@@ -83,7 +85,7 @@ class BankState
 				if(isActive(process))
 					if(canFinish(process))
 						processId = @current_need.index(process)
-						finishProcess(process, processId)
+						finishProcess(@currently_allocated[processId], processId)
 						counter = counter - 1
 						res = true
 					else
