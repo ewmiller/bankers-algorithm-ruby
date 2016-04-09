@@ -1,8 +1,4 @@
-require "matrix"
-
 class BankState
-
-	@@safe_sequence = Array.new()
 
 	def initialize(state)
 		raise "Given state array is empty." if state.empty?
@@ -10,6 +6,9 @@ class BankState
 		# Get important variables from the state.
 		@num_resources = state[0].split(" ")[0].to_i
 		@num_processes = state[0].split(" ")[1].to_i
+		puts("Processes: #{@num_processes}")
+
+		@safe_sequence = Array.new(@num_processes, 0)
 
 		# Get the currently available resource matrix
 		@available_resources = state[1].split(" ").collect{|i| i.to_i}
@@ -19,6 +18,7 @@ class BankState
 		for i in 2..(1 + @num_processes) do
 			@max_need << state[i].split(" ").collect{|x| x.to_i}
 		end
+		puts("Max need array: #{@max_need}")
 
 		# Get the allocation matrix.
 		@currently_allocated = Array.new()
@@ -27,16 +27,15 @@ class BankState
 		end
 
 		# Initialize the current need matrix.
+
 		@current_need = @currently_allocated
-		# For each row in current_need (each process)
-		@current_need.each do |row|
-			rowIndex = @current_need.index(row)
-			# for each cell in the row (this process' need of resource i)
-			row.each do |cell|
-				cellIndex = @current_need[rowIndex].index(cell)
-				cell = (@max_need[rowIndex][0] - @currently_allocated[rowIndex][cellIndex])
+		(0..(@num_processes - 1)).each do |i|
+			(0..(@num_resources - 1)).each do |j|
+				@current_need[i][j] = @max_need[i][j] - @currently_allocated[i][j]
 			end
 		end
+		puts("Current need array: #{@current_need}")
+
 
 		@active = Array.new(@num_processes, true)
 
@@ -49,19 +48,20 @@ class BankState
 			current_need = @current_need[@current_need.index(process)][process.index(need)]
 			if((current_need) > @available_resources[process.index(need)])
 				res = false
+				puts("Process with needs #{process} can't finish because only #{@available_resources} are available.")
 			end
 		end
-		if (!res) then puts("Process with needs #{process} can't finish because only #{@available_resources} are available.") end
 		return res
 	end
 
 	# Finish executing a process (release its resources and remove it)
-	def finishProcess(process)
+	def finishProcess(process, processId)
 		process.each do |resource|
 			@available_resources[process.index(resource)] += resource
 		end
-		puts("Removing #{process} from the current need matrix.")
-		@@safe_sequence << @current_need.index(process)
+		puts("Marking #{process} as inactive:")
+		@safe_sequence[processId] = processId + 1
+		puts("Current sequence: #{@safe_sequence}")
 		@active[@current_need.index(process)] = false
 	end
 
@@ -82,10 +82,16 @@ class BankState
 			@current_need.each do |process|
 				if(isActive(process))
 					if(canFinish(process))
-						finishProcess(process)
+						processId = @current_need.index(process)
+						finishProcess(process, processId)
+						counter = counter - 1
+						res = true
 					else
 						counter = counter + 1
+						res = false
 					end
+				else
+					counter = counter + 1
 				end
 			end
 			if(counter = @num_processes)
@@ -99,6 +105,6 @@ class BankState
 	end
 
 	def getSequence()
-		return @@safe_sequence
+		return @safe_sequence
 	end
 end

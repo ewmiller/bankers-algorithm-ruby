@@ -1,39 +1,22 @@
 File: Example1
 Safe State.
 Safe sequence: 
-Process0
 Process1
+Process2
+Process3
 
 File: Example2
 Safe State.
 Safe sequence: 
-Process0
-Process1
-Process0
 Process1
 Process2
 Process3
 Process4
+Process5
 
 File: Example3
-Safe State.
-Safe sequence: 
-Process0
-Process1
-Process0
-Process1
-Process2
-Process3
-Process4
+Unsafe State.
 
 File: Example4
-Safe State.
-Safe sequence: 
-Process0
-Process1
-Process0
-Process1
-Process2
-Process3
-Process4
+Unsafe State.
 

@@ -20,9 +20,11 @@ for i in 1..Dir["./resources/*"].count do
     file.syswrite("Safe sequence: \n")
     bank.getSequence().each do |process|
       file.syswrite("Process#{process}\n")
+    end
+  else
+    file.syswrite("Unsafe State.\n")
   end
   file.syswrite("\n")
-  end # end if
   puts("Completed file #{i}.")
 end # end for loop
 
