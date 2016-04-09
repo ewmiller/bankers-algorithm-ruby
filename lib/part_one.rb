@@ -1,7 +1,5 @@
 require_relative('./bank_state.rb')
 
-# TODO: execution completes, but is incorrect. Safe sequences don't make sense.
-
 File.open("./out/part1_output.txt", "w") do |file|
 
 for i in 1..Dir["./resources/*"].count do

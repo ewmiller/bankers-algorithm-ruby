@@ -6,8 +6,8 @@ class BankState
 		# Get important variables from the state.
 		@num_resources = state[0].split(" ")[0].to_i
 		@num_processes = state[0].split(" ")[1].to_i
-		puts("Processes: #{@num_processes}")
 
+		# An array containing a safe sequence of processes
 		@safe_sequence = Array.new(@num_processes, 0)
 
 		# Get the currently available resource matrix
@@ -18,7 +18,6 @@ class BankState
 		for i in 2..(1 + @num_processes) do
 			@max_need << state[i].split(" ").collect{|x| x.to_i}
 		end
-		puts("Max need array: #{@max_need}")
 
 		# Get the allocation matrix.
 		@currently_allocated = Array.new()
@@ -27,16 +26,14 @@ class BankState
 		end
 
 		# Initialize the current need matrix.
-
 		@current_need = @currently_allocated.map { |e| e.dup  }
 		(0..(@num_processes - 1)).each do |i|
 			(0..(@num_resources - 1)).each do |j|
 				@current_need[i][j] = @max_need[i][j] - @currently_allocated[i][j]
 			end
 		end
-		puts("Current need array: #{@current_need}")
 
-
+		# An array to keep track of active processes
 		@active = Array.new(@num_processes, true)
 
 	end # end initialize
@@ -48,7 +45,6 @@ class BankState
 			current_need = @current_need[@current_need.index(process)][process.index(need)]
 			if((current_need) > @available_resources[process.index(need)])
 				res = false
-				puts("Process with needs #{process} can't finish because only #{@available_resources} are available.")
 			end
 		end
 		return res
@@ -59,11 +55,7 @@ class BankState
 		process.each do |resource|
 			@available_resources[process.index(resource)] += resource
 		end
-
-		puts("Marking #{process} as inactive.")
-		puts("Available resources: #{@available_resources}")
 		@safe_sequence[processId] = processId + 1
-		puts("Current sequence: #{@safe_sequence}")
 		@active[processId] = false
 	end
 
@@ -100,13 +92,18 @@ class BankState
 				break
 			end
 		end
-		if(res == false)
-			puts("Unsafe state.")
-		end
 		return res
 	end
 
 	def getSequence()
 		return @safe_sequence
+	end
+
+	def getNumResources()
+		return @num_resources
+	end
+
+	def getNumProcesses()
+		return @num_processes
 	end
 end
