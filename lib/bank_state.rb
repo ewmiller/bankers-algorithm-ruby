@@ -70,7 +70,6 @@ class BankState
 		res = true
 		# count prevents deadlock from looping forever
 		count = 0
-		# TODO: while loop never exits
 		while(true)
 			counter = 0
 			@current_need.each do |process|

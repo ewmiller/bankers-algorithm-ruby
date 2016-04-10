@@ -1,0 +1,22 @@
+Read file: example2.txt
+Spawned new thread.
+Spawned new thread.
+Spawned new thread.
+Spawned new thread.
+Spawned new thread.
+Spawned new thread.Customer 4 requests [0, 0, 0].
+
+Request granted.
+Customer 2 wants to release [4, 0, 2].
+Request denied.
+This is process 2. My release was granted!
+Customer 1 requests [0, 0, 0].
+Request granted.
+Customer 3 wants to release [2, 0, 2].
+Request denied.
+This is process 3. My release was granted!
+Customer 2 requests [4, 1, 0].
+Request granted.
+Customer 2 wants to release [13, 1, 0].
+Request granted.
+

@@ -28,27 +28,26 @@ File.open("./out/part2_output.txt", "w") do |file|
       req_or_rel = rand(2)
       if(req_or_rel == 0)
         @semaphore.synchronize {
-          request = []
+          request = Array.new(@num_resources, 0)
           @num_resources.times do |i|
             max_request = rand(0..(max_need[i] - allocated[i] + 1))
-            request << rand(0..(max_request))
+            if max_request > 0
+              request[i] = rand(0..(max_request))
+            end
           end
           res = @banker.request_resources(id, request)
           if res
-            puts("This is process #{id}. My request was granted!")
             @num_resources.times do |i|
               allocated[i] += request[i]
             end
-          else
-            puts("This is process #{id}. My request was not granted...")
           end
         }
       else
         @semaphore.synchronize {
-          release = []
+          release = Array.new(@num_resources, 0)
           @num_resources.times do |i|
             max_release = rand(0..(allocated[i] + 1))
-            release << max_release
+            release[i] = max_release
           end
           res2 = @banker.release_resources(id, release)
           if res2
