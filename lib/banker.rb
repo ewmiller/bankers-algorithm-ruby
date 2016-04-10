@@ -7,12 +7,26 @@ class Banker
   end
 
   def request_resources(customer_id, request)
-    puts("Customer #{customer_id} requests #{request}. No logic yet.")
-    return true
+    puts("This is the bank. Customer #{customer_id} requests #{request}.")
+
+    # Below is the logic to handle incoming requests.
+    available = @state.getAvailable()
+    res = true
+    (0..(available.length - 1)).each do |i|
+      if(available[i] < request[i])
+        res = false
+      end
+      @potential_state = @state
+      @potential_state.apply_request(customer_id, request)
+      if(!@potential_state.isSafe())
+        res = false
+      end
+    end
+    return res
   end
 
   def release_resources(customer_id, release)
-    puts("Customer #{customer_id} wants to release #{release}. No logic yet.")
+    puts("This is the bank. Customer #{customer_id} wants to release #{release}.")
     return true
   end
 

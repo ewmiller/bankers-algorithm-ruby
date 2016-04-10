@@ -95,6 +95,16 @@ class BankState
 		return res
 	end
 
+	# Fulfills a process request in real-time. Should not be called while
+	# checking if the state is safe.
+	# processId is the index of the process
+	def apply_request(processId, request)
+		(0..(request.length - 1)).each do |i|
+			@currently_allocated[processId][i] += request[i]
+			@available_resources[i] -= request[i]
+		end
+	end
+
 	def getSequence()
 		return @safe_sequence
 	end
@@ -105,5 +115,17 @@ class BankState
 
 	def getNumProcesses()
 		return @num_processes
+	end
+
+	def getMaxNeed()
+		return @max_need
+	end
+
+	def getAllocated()
+		return @currently_allocated
+	end
+
+	def getAvailable()
+		return @available_resources
 	end
 end

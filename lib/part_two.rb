@@ -19,6 +19,8 @@ File.open("./out/part2_output.txt", "w") do |file|
 
   # A customer thread. Keeps track of its id, what it needs, and what it has.
   def customer(id, max_need, allocated)
+    allocated = allocated
+    max_need = max_need
     puts("Spawned new thread.")
     begin
       # sleep for a random amount of seconds, from 0 to 6 (rand(7) will never generate 7)
@@ -37,6 +39,8 @@ File.open("./out/part2_output.txt", "w") do |file|
             @num_resources.times do |i|
               allocated[i] += request[i]
             end
+          else
+            puts("This is process #{id}. My request was not granted...")
           end
         }
       else
@@ -58,13 +62,16 @@ File.open("./out/part2_output.txt", "w") do |file|
     end while true
   end
 
-  # TODO: this is dummy data for now
+  # Create new threads
   (0..@num_processes).each do |i|
     @customer_threads[i] = Thread.new {
-      customer(i, Array.new(@num_resources, @num_resources), Array.new(@num_resources, @num_resources))
+      max_need = state.getMaxNeed
+      allocated = state.getAllocated()
+      customer(i, max_need[i], allocated[i])
     }
   end
 
+  # Join threads (this won't happen because they never finish)
   @customer_threads.each {|thread| thread.join; puts("joined thread")}
 
 end # close file
